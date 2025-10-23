@@ -1,0 +1,283 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔍 Advanced Analysis</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🔍 تحليل متقدم: أي خوارزمية هي الأفضل؟</h1>
+      <div id="analysisContent">
+        <p>جارٍ تحميل النتائج...</p>
+      </div>
+      <a href="results.html" class="btn">← العودة للنتائج</a>
+      <a href="upload.html" class="btn" style="margin-right:10px;">🔄 تحليل جديد</a>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = JSON.parse(localStorage.getItem('lastResult'));
+      if (!data) {
+        document.getElementById('analysisContent').innerHTML = '<p>لم يتم العثور على نتائج. يرجى تشغيل تحليل جديد.</p>';
+        return;
+      }
+
+      // Find best method by MSE
+      let bestMethod = 'GA';
+      let bestMSE = data.results.GA.mse;
+      for (const [method, res] of Object.entries(data.results)) {
+        if (res.mse !== null && res.mse < bestMSE) {
+          bestMSE = res.mse;
+          bestMethod = method;
+        }
+      }
+
+      // Find fastest method
+      let fastestMethod = 'GA';
+      let minTime = data.results.GA.time;
+      for (const [method, res] of Object.entries(data.results)) {
+        if (res.time < minTime) {
+          minTime = res.time;
+          fastestMethod = method;
+        }
+      }
+
+      let analysisHTML = `<h2>🏆 الخوارزمية الأفضل: <strong>${bestMethod}</strong></h2>`;
+      analysisHTML += `<p>حققت أقل خطأ تربيعي متوسط (MSE = ${bestMSE.toFixed(4)}).</p>`;
+
+      if (bestMethod === 'GA') {
+        analysisHTML += `
+          <div style="background:#eef4fc; padding:15px; border-radius:8px; margin:15px 0;">
+            <h3>لماذا كانت الخوارزمية الجينية الأفضل؟</h3>
+            <ul>
+              <li>استكشفت مساحة الحلول بشكل شامل باستخدام مبادئ التطور.</li>
+              <li>اختارت مجموعة سمات متوازنة بين البساطة والأداء.</li>
+              <li>تفوّقت على الطرق التقليدية التي تعتمد على معايير ثابتة.</li>
+            </ul>
+          </div>
+        `;
+      } else {
+        analysisHTML += `
+          <div style="background:#fff8e1; padding:15px; border-radius:8px; margin:15px 0;">
+            <h3>ملاحظة:</h3>
+            <p>في هذه الحالة، كانت الطريقة <strong>${bestMethod}</strong> أفضل من الخوارزمية الجينية.</p>
+            <p>هذا قد يعود إلى:</p>
+            <ul>
+              <li>بساطة العلاقة بين السمات والهدف.</li>
+              <li>صغر حجم مجموعة البيانات.</li>
+              <li>عدم كفاية أجيال الخوارزمية الجينية.</li>
+            </ul>
+          </div>
+        `;
+      }
+
+      analysisHTML += `<h3>مقارنة إضافية:</h3>`;
+      analysisHTML += `<p>أسرع خوارزمية: <strong>${fastestMethod}</strong> (${minTime.toFixed(3)} ثانية).</p>`;
+
+      // Add feature overlap insight
+      const gaFeatures = new Set(data.results.GA.selected);
+      let maxOverlap = 0;
+      let bestOverlapMethod = '';
+      for (const [method, res] of Object.entries(data.results)) {
+        if (method === 'GA') continue;
+        const overlap = res.selected.filter(x => gaFeatures.has(x)).length;
+        const jaccard = overlap / (gaFeatures.size + res.selected.length - overlap);
+        if (jaccard > maxOverlap) {
+          maxOverlap = jaccard;
+          bestOverlapMethod = method;
+        }
+      }
+      if (bestOverlapMethod) {
+        analysisHTML += `<p>أكثر الطرق تشابهًا مع GA: <strong>${bestOverlapMethod}</strong> (تشابه جاكارد = ${(maxOverlap).toFixed(2)}).</p>`;
+      }
+
+      document.getElementById('analysisContent').innerHTML = analysisHTML;
+    });
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔍 Advanced Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .metric-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-4px);
+    }
+    .highlight {
+      background: #eef4fc;
+      border-left: 4px solid #2c6fbb;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .insight {
+      background: #fff8e1;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .chart-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .chart-container img {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #eee;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-3xl font-bold text-blue-600 mb-6">🔍 Advanced Analysis: Which Algorithm is Best?</h1>
+
+        <div id="analysisContent" class="space-y-6">
+          <!-- Best Method -->
+          <div class="metric-card">
+            <h2 class="text-xl font-semibold mb-2">🏆 Best Algorithm</h2>
+            <p id="bestMethod" class="text-lg font-bold text-green-600">Loading...</p>
+            <p id="bestMSE" class="mt-2">Achieved MSE: <span id="bestMSEValue">-</span></p>
+          </div>
+
+          <!-- Why It's Best -->
+          <div id="whyBest" class="highlight">
+            <h3 class="font-semibold mb-2">Why is this algorithm the best?</h3>
+            <p id="whyBestText">Loading...</p>
+          </div>
+
+          <!-- Fastest Method -->
+          <div class="metric-card">
+            <h2 class="text-xl font-semibold mb-2">⚡ Fastest Algorithm</h2>
+            <p id="fastestMethod" class="text-lg font-bold text-blue-600">Loading...</p>
+            <p id="fastestTime" class="mt-2">Execution time: <span id="fastestTimeValue">-</span> seconds</p>
+          </div>
+
+          <!-- Feature Overlap -->
+          <div class="metric-card">
+            <h2 class="text-xl font-semibold mb-2">🤝 Feature Overlap with GA</h2>
+            <p id="overlapMethod" class="text-lg font-bold text-purple-600">Loading...</p>
+            <p id="overlapJaccard" class="mt-2">Jaccard similarity: <span id="overlapJaccardValue">-</span></p>
+          </div>
+
+          <!-- Insights -->
+          <div id="insights" class="insight">
+            <h3 class="font-semibold mb-2">💡 Key Insights</h3>
+            <ul id="insightsList" class="list-disc list-inside space-y-1">
+              <li>Loading insights...</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex space-x-4">
+          <a href="results.html" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            ← Back to Results
+          </a>
+          <a href="upload.html" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+            🔄 New Analysis
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = JSON.parse(localStorage.getItem('lastResult'));
+      if (!data) {
+        document.getElementById('analysisContent').innerHTML = '<p class="text-center text-red-600">No results found. Please run a new analysis.</p>';
+        return;
+      }
+
+      // Find best method by MSE
+      let bestMethod = 'GA';
+      let bestMSE = data.results.GA.mse;
+      for (const [method, res] of Object.entries(data.results)) {
+        if (res.mse !== null && res.mse < bestMSE) {
+          bestMSE = res.mse;
+          bestMethod = method;
+        }
+      }
+
+      // Find fastest method
+      let fastestMethod = 'GA';
+      let minTime = data.results.GA.time;
+      for (const [method, res] of Object.entries(data.results)) {
+        if (res.time < minTime) {
+          minTime = res.time;
+          fastestMethod = method;
+        }
+      }
+
+      // Find best overlap with GA
+      const gaFeatures = new Set(data.results.GA.selected);
+      let maxOverlap = 0;
+      let bestOverlapMethod = '';
+      for (const [method, res] of Object.entries(data.results)) {
+        if (method === 'GA') continue;
+        const overlap = res.selected.filter(x => gaFeatures.has(x)).length;
+        const jaccard = overlap / (gaFeatures.size + res.selected.length - overlap);
+        if (jaccard > maxOverlap) {
+          maxOverlap = jaccard;
+          bestOverlapMethod = method;
+        }
+      }
+
+      // Update DOM
+      document.getElementById('bestMethod').textContent = bestMethod;
+      document.getElementById('bestMSEValue').textContent = bestMSE.toFixed(4);
+      document.getElementById('fastestMethod').textContent = fastestMethod;
+      document.getElementById('fastestTimeValue').textContent = minTime.toFixed(3);
+      document.getElementById('overlapMethod').textContent = bestOverlapMethod;
+      document.getElementById('overlapJaccardValue').textContent = maxOverlap.toFixed(2);
+
+      // Why it's best
+      const whyBestText = document.getElementById('whyBestText');
+      if (bestMethod === 'GA') {
+        whyBestText.innerHTML = `
+          <ul class="list-disc list-inside space-y-1">
+            <li>Explored the solution space comprehensively using evolutionary principles.</li>
+            <li>Selected a balanced set of features that optimized both simplicity and performance.</li>
+            <li>Outperformed traditional methods that rely on fixed criteria.</li>
+          </ul>
+        `;
+      } else {
+        whyBestText.innerHTML = `
+          <ul class="list-disc list-inside space-y-1">
+            <li>In this case, <strong>${bestMethod}</strong> outperformed the Genetic Algorithm.</li>
+            <li>This may be due to: simple relationships between features and target, small dataset size, or insufficient GA generations.</li>
+          </ul>
+        `;
+      }
+
+      // Insights
+      const insightsList = document.getElementById('insightsList');
+      insightsList.innerHTML = `
+        <li>The Genetic Algorithm selected ${data.results.GA.selected.length} features.</li>
+        <li>The fastest method was ${fastestMethod}, taking only ${minTime.toFixed(3)} seconds.</li>
+        <li>The method most similar to GA in feature selection was ${bestOverlapMethod} (Jaccard = ${maxOverlap.toFixed(2)}).</li>
+        <li>Consider increasing GA generations or population size for better exploration.</li>
+      `;
+    });
+  </script>
+</body>
+</html>

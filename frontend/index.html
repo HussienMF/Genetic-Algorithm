@@ -1,0 +1,694 @@
+<!-- frontend/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Genetic Feature Selection</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f9fbfd; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { color: #2c6fbb; }
+        fieldset { border: 1px solid #dfe6ec; border-radius: 8px; padding: 15px; margin: 20px 0; }
+        legend { font-weight: bold; color: #2c6fbb; }
+        label { display: block; margin: 8px 0 4px; }
+        input, select, button { padding: 8px 12px; margin: 4px 8px 4px 0; border: 1px solid #ced4da; border-radius: 6px; }
+        button { background: #2c6fbb; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1e5aa8; }
+        .checkbox-group label { display: inline-block; margin-right: 15px; font-weight: normal; }
+        #result { margin-top: 30px; display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎯 Genetic Feature Selection</h1>
+    <form id="uploadForm">
+        <label>📁 Upload CSV File: <input name="file" type="file"></label>
+        <label>🔗 Or CSV URL: <input name="url" type="text" size="50"></label>
+
+        <fieldset>
+            <legend>⚙️ Genetic Algorithm Parameters</legend>
+            Population Size: <input name="pop_size" type="number" value="40" min="10"><br>
+            Generations: <input name="generations" type="number" value="12" min="5"><br>
+            Mutation Rate: <input name="mutation_rate" type="number" step="0.01" value="0.02" min="0.01" max="0.1"><br>
+            Crossover Rate: <input name="crossover_rate" type="number" step="0.01" value="0.8" min="0.5" max="1.0"><br>
+            CV Folds: <input name="cv" type="number" value="3" min="2"><br>
+            <label><input type="radio" name="model_type" value="linear" checked> Linear Regression</label>
+            <label><input type="radio" name="model_type" value="ridge"> Ridge Regression</label>
+            <label><input type="radio" name="model_type" value="mlp"> MLP (Neural Network)</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>📊 Comparison Mode</legend>
+            <label><input type="radio" name="mode" value="all" checked> Compare ALL algorithms</label>
+            <label><input type="radio" name="mode" value="select"> Select specific algorithms:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="methods" value="SelectKBest"> SelectKBest</label>
+                <label><input type="checkbox" name="methods" value="LassoCV"> LassoCV</label>
+                <label><input type="checkbox" name="methods" value="RFE"> RFE</label>
+                <label><input type="checkbox" name="methods" value="VarianceThreshold"> VarianceThreshold</label>
+                <label><input type="checkbox" name="methods" value="MutualInfo_topK"> MutualInfo</label>
+                <label><input type="checkbox" name="methods" value="RandomForest_topK"> RandomForest</label>
+            </div>
+        </fieldset>
+
+        <button type="submit">🚀 Run Feature Selection</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '<p>Processing... please wait.</p>';
+    resultDiv.style.display = 'block';
+
+    try {
+        const res = await fetch('http://127.0.0.1:8000/run', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Unknown error');
+
+        let html = `<h2>✅ Results for ${data.dataset} (Model: ${data.model_type.toUpperCase()})</h2>`;
+        html += `<table border="1" style="width:100%; border-collapse: collapse;">
+            <tr><th>Method</th><th># Features</th><th>MSE</th><th>Time</th></tr>`;
+        for (const [method, res] of Object.entries(data.results)) {
+            const mse = res.mse !== null ? res.mse.toFixed(4) : 'N/A';
+            html += `<tr><td>${method}</td><td>${res.selected.length}</td><td>${mse}</td><td>${res.time.toFixed(3)}s</td></tr>`;
+        }
+        html += `</table>`;
+
+        html += `<h3>Plots:</h3>`;
+        data.plots.forEach(url => {
+            html += `<div><img src="${url}" style="max-width:100%; height:auto; margin:10px 0; border:1px solid #eee; border-radius:6px;"></div>`;
+        });
+
+        resultDiv.innerHTML = html;
+    } catch (err) {
+        resultDiv.innerHTML = `<p style="color:red;">❌ Error: ${err.message}</p>`;
+    }
+});
+</script>
+</body>
+</html> -->
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 Genetic Feature Selection</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🎯 Genetic Feature Selection</h1>
+      <p>Select your dataset and compare feature selection methods.</p>
+
+      <form id="uploadForm">
+        <div class="form-group">
+          <label>📁 Upload CSV File</label>
+          <input name="file" type="file" accept=".csv" required>
+        </div>
+        <div class="form-group">
+          <label>🔗 Or CSV URL</label>
+          <input name="url" type="url" placeholder="https://example.com/data.csv">
+        </div>
+
+        <h3>⚙️ Genetic Algorithm Parameters</h3>
+        <div class="form-group">
+          <label>Population Size</label>
+          <input name="pop_size" type="number" value="40" min="10">
+        </div>
+        <div class="form-group">
+          <label>Generations</label>
+          <input name="generations" type="number" value="12" min="5">
+        </div>
+        <div class="form-group">
+          <label>Mutation Rate</label>
+          <input name="mutation_rate" type="number" step="0.01" value="0.02" min="0.01" max="0.1">
+        </div>
+        <div class="form-group">
+          <label>Crossover Rate</label>
+          <input name="crossover_rate" type="number" step="0.01" value="0.8" min="0.5" max="1.0">
+        </div>
+        <div class="form-group">
+          <label>CV Folds</label>
+          <input name="cv" type="number" value="3" min="2">
+        </div>
+        <div class="form-group">
+          <label>Model Type</label>
+          <select name="model_type">
+            <option value="linear">Linear Regression</option>
+            <option value="ridge">Ridge Regression</option>
+            <option value="mlp">MLP (Neural Network)</option>
+          </select>
+        </div>
+
+        <h3>📊 Comparison Methods</h3>
+        <div class="form-group">
+          <label><input type="checkbox" name="methods" value="SelectKBest" checked> SelectKBest</label>
+          <label><input type="checkbox" name="methods" value="LassoCV" checked> LassoCV</label>
+          <label><input type="checkbox" name="methods" value="RFE" checked> RFE</label>
+          <label><input type="checkbox" name="methods" value="VarianceThreshold" checked> VarianceThreshold</label>
+          <label><input type="checkbox" name="methods" value="MutualInfo_topK" checked> MutualInfo</label>
+          <label><input type="checkbox" name="methods" value="RandomForest_topK" checked> RandomForest</label>
+        </div>
+
+        <button type="submit" class="btn">🚀 Run Feature Selection</button>
+        <div id="progress" class="progress" style="display:none;">
+          <div class="progress-bar"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="assets/script.js"></script>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 Genetic Feature Selection</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .lang-toggle {
+      position: absolute; top: 20px; right: 20px;
+      background: #2c6fbb; color: white; border: none;
+      padding: 6px 12px; border-radius: 4px; cursor: pointer;
+    }
+    .section { margin-bottom: 30px; }
+    .team-card {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid #dfe6ec;
+    }
+    .team-card h3 { color: #2c6fbb; }
+  </style>
+</head>
+<body>
+  <button class="lang-toggle" onclick="toggleLang()">EN / AR</button>
+  
+  <div class="container">
+    <div class="card">
+      <h1>🎯 اختيار السمات باستخدام الخوارزمية الجينية</h1>
+      <h1 class="en" style="display:none;">🎯 Genetic Feature Selection</h1>
+
+      <div class="section">
+        <h2>فكرة المشروع</h2>
+        <h2 class="en" style="display:none;">Project Idea</h2>
+        <p>
+          هذا المشروع يهدف إلى مقارنة طرق اختيار السمات (Feature Selection) المختلفة،
+          مع التركيز على استخدام <strong>الخوارزمية الجينية</strong> لاكتشاف أفضل مجموعة من السمات
+          التي تحسّن أداء نموذج التنبؤ.
+        </p>
+        <p class="en" style="display:none;">
+          This project compares various feature selection methods,
+          with a focus on using a <strong>Genetic Algorithm (GA)</strong>
+          to discover the optimal subset of features that improves predictive model performance.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>لماذا الخوارزمية الجينية؟</h2>
+        <h2 class="en" style="display:none;">Why Genetic Algorithm?</h2>
+        <p>
+          على عكس الطرق التقليدية (مثل Lasso أو SelectKBest)، فإن الخوارزمية الجينية
+          تستكشف فضاء الحلول بشكل ذكي باستخدام مبادئ التطور الطبيعي (الانتقاء، الطفرة، التهجين)،
+          مما يسمح لها باكتشاف تركيبات غير بديهية من السمات قد تفوتها الطرق الأخرى.
+        </p>
+        <p class="en" style="display:none;">
+          Unlike traditional methods (e.g., Lasso, SelectKBest), the Genetic Algorithm
+          intelligently explores the solution space using principles of natural evolution
+          (selection, mutation, crossover), enabling it to discover non-intuitive feature combinations
+          that other methods might miss.
+        </p>
+      </div>
+
+      <div class="team-card">
+        <h3>إعداد الطالبين</h3>
+        <h3 class="en" style="display:none;">Prepared by Students</h3>
+        <p><strong>حسين فطراوي</strong> | Hussien Fatrawi</p>
+        <p><strong>أميرة بيطار</strong> | Amira Bitar</p>
+        <p>بإشراف الأنستين القديرتين <strong>كوكي و لولو</strong></p>
+        <p class="en" style="display:none;">Supervised by the esteemed Ms. <strong>Koki</strong></p>
+      </div>
+
+      <a href="upload.html" class="btn" style="display:block; text-align:center; margin-top:20px;">
+        ابدأ التحليل الآن →
+      </a>
+      <a href="upload.html" class="btn en" style="display:none; text-align:center; margin-top:20px;">
+        Start Analysis →
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function toggleLang() {
+      const isArabic = document.querySelector('html').getAttribute('dir') === 'rtl';
+      if (isArabic) {
+        document.querySelector('html').setAttribute('dir', 'ltr');
+        document.querySelectorAll('.en').forEach(el => el.style.display = 'block');
+        document.querySelectorAll(':not(.en)').forEach(el => {
+          if (el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'P' || el.tagName === 'A') {
+            if (!el.classList.contains('en')) el.style.display = 'none';
+          }
+        });
+      } else {
+        document.querySelector('html').setAttribute('dir', 'rtl');
+        document.querySelectorAll('.en').forEach(el => el.style.display = 'none');
+        document.querySelectorAll(':not(.en)').forEach(el => {
+          if (el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'P' || el.tagName === 'A') {
+            if (!el.classList.contains('en')) el.style.display = 'block';
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html> -->
+<!-- 
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 Genetic Feature Selection</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-toggle {
+      position: absolute; top: 20px; right: 20px;
+      background: #2c6fbb; color: white; border: none;
+      padding: 6px 12px; border-radius: 4px; cursor: pointer;
+      font-size: 14px;
+    }
+    .hero-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <button class="lang-toggle" onclick="toggleLang()">EN / AR</button>
+
+  <div class="container mx-auto px-4 py-8">
+
+    <div class="hero-gradient text-white rounded-2xl p-8 mb-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">🎯 اختيار السمات باستخدام الخوارزمية الجينية</h1>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 hidden en">🎯 Genetic Feature Selection</h1>
+      <p class="text-lg md:text-xl max-w-2xl mx-auto">
+        هذا المشروع يهدف إلى مقارنة طرق اختيار السمات (Feature Selection) المختلفة، مع التركيز على استخدام <strong>الخوارزمية الجينية</strong> لاكتشاف أفضل مجموعة من السمات التي تحسّن أداء نموذج التنبؤ.
+      </p>
+      <p class="text-lg md:text-xl max-w-2xl mx-auto hidden en">
+        This project compares various feature selection methods, with a focus on using a <strong>Genetic Algorithm (GA)</strong> to discover the optimal subset of features that improves predictive model performance.
+      </p>
+    </div>
+
+
+    <div class="grid md:grid-cols-2 gap-8 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4">لماذا الخوارزمية الجينية؟</h2>
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4 hidden en">Why Genetic Algorithm?</h2>
+        <ul class="space-y-2">
+          <li>تستكشف فضاء الحلول بشكل ذكي باستخدام مبادئ التطور الطبيعي.</li>
+          <li>تكتشف تركيبات غير بديهية من السمات قد تفوتها الطرق الأخرى.</li>
+          <li>مناسبة للبيانات المعقدة ذات العلاقات غير الخطية.</li>
+        </ul>
+        <ul class="space-y-2 hidden en">
+          <li>Intelligently explores the solution space using principles of natural evolution.</li>
+          <li>Discovers non-intuitive feature combinations that other methods might miss.</li>
+          <li>Suitable for complex data with non-linear relationships.</li>
+        </ul>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4">الفريق</h2>
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4 hidden en">Team</h2>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">H</div>
+            <div class="ml-4">
+              <div class="font-semibold">حسين فطراوي</div>
+              <div class="text-sm text-gray-500">Hussien Fatrawi</div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
+            <div class="ml-4">
+              <div class="font-semibold">أميرة بيطار</div>
+              <div class="text-sm text-gray-500">Amira Bitar</div>
+            </div>
+          </div>
+          <div class="pt-2">
+            <div class="font-semibold">بإشراف الأنستين القديرتين</div>
+            <div class="text-sm text-gray-500">Supervised by the esteemed Ms. Koki & Lolo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="text-center mt-8">
+      <a href="upload.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300">
+        ابدأ التحليل الآن →
+      </a>
+      <a href="upload.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 hidden en">
+        Start Analysis →
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function toggleLang() {
+      const isArabic = document.querySelector('html').getAttribute('dir') === 'rtl';
+      if (isArabic) {
+        document.querySelector('html').setAttribute('dir', 'ltr');
+        document.querySelectorAll('.en').forEach(el => el.style.display = 'block');
+        document.querySelectorAll(':not(.en)').forEach(el => {
+          if (el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'P' || el.tagName === 'A' || el.tagName === 'LI') {
+            if (!el.classList.contains('en')) el.style.display = 'none';
+          }
+        });
+      } else {
+        document.querySelector('html').setAttribute('dir', 'rtl');
+        document.querySelectorAll('.en').forEach(el => el.style.display = 'none');
+        document.querySelectorAll(':not(.en)').forEach(el => {
+          if (el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'P' || el.tagName === 'A' || el.tagName === 'LI') {
+            if (!el.classList.contains('en')) el.style.display = 'block';
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 Genetic Feature Selection</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-toggle {
+      position: absolute; top: 20px; right: 20px;
+      background: #2c6fbb; color: white; border: none;
+      padding: 6px 12px; border-radius: 4px; cursor: pointer;
+      font-size: 14px;
+      z-index: 10;
+    }
+    .hero-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <button class="lang-toggle" onclick="toggleLang()">EN / AR</button>
+
+  <div class="container mx-auto px-4 py-8">
+
+    <div class="hero-gradient text-white rounded-2xl p-8 mb-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">🎯 اختيار السمات باستخدام الخوارزمية الجينية</h1>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 hidden en">🎯 Genetic Feature Selection</h1>
+      <p class="text-lg md:text-xl max-w-2xl mx-auto">
+        هذا المشروع يهدف إلى مقارنة طرق اختيار السمات (Feature Selection) المختلفة، مع التركيز على استخدام <strong>الخوارزمية الجينية</strong> لاكتشاف أفضل مجموعة من السمات التي تحسّن أداء نموذج التنبؤ.
+      </p>
+      <p class="text-lg md:text-xl max-w-2xl mx-auto hidden en">
+        This project compares various feature selection methods, with a focus on using a <strong>Genetic Algorithm (GA)</strong> to discover the optimal subset of features that improves predictive model performance.
+      </p>
+    </div>
+
+
+    <div class="grid md:grid-cols-2 gap-8 mb-8">
+   
+      <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4">لماذا الخوارزمية الجينية؟</h2>
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4 hidden en">Why Genetic Algorithm?</h2>
+        <ul class="space-y-2 text-gray-700">
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            تستكشف فضاء الحلول بشكل ذكي باستخدام مبادئ التطور الطبيعي.
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            تكتشف تركيبات غير بديهية من السمات قد تفوتها الطرق الأخرى.
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            مناسبة للبيانات المعقدة ذات العلاقات غير الخطية.
+          </li>
+        </ul>
+        <ul class="space-y-2 text-gray-700 hidden en">
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            Intelligently explores the solution space using principles of natural evolution.
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            Discovers non-intuitive feature combinations that other methods might miss.
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            Suitable for complex data with non-linear relationships.
+          </li>
+        </ul>
+      </div>
+
+
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl shadow-sm border border-blue-100">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold text-blue-700 mb-1">إعداد الطالبين</h2>
+          <h2 class="text-2xl font-bold text-blue-700 mb-1 hidden en">Prepared by Students</h2>
+          <div class="w-16 h-1px bg-blue-300 mx-auto"></div>
+        </div>
+
+        <div class="space-y-5">
+         
+          <div class="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+              HF
+            </div>
+            <div class="mr-4 text-right md:text-left">
+              <div class="font-semibold text-gray-800">حسين فطراوي</div>
+              <div class="text-sm text-gray-600">Hussien Fatrawi</div>
+            </div>
+          </div>
+
+        
+          <div class="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
+              AB
+            </div>
+            <div class="mr-4 text-right md:text-left">
+              <div class="font-semibold text-gray-800">أميرة بيطار</div>
+              <div class="text-sm text-gray-600">Amira Bitar</div>
+            </div>
+          </div>
+
+         
+          <div class="mt-6 pt-4 border-t border-blue-100">
+            <div class="flex items-center p-4 bg-blue-50 rounded-lg">
+              <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-lg">
+                K & L
+              </div>
+              <div class="mr-4 text-right md:text-left">
+                <div class="font-semibold text-gray-800">بإشراف الأنستين القديرات</div>
+                <div class="text-lg font-bold text-amber-700">كوكي و لولو</div>
+                <div class="text-sm text-gray-600 hidden en">Supervised by the esteemed instructors Ms. Koki and Ms. Lulu</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="text-center mt-8">
+      <a href="upload.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300">
+        ابدأ التحليل الآن →
+      </a>
+      <a href="upload.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 hidden en">
+        Start Analysis →
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function toggleLang() {
+      const isArabic = document.querySelector('html').getAttribute('dir') === 'rtl';
+      if (isArabic) {
+        document.querySelector('html').setAttribute('dir', 'ltr');
+        document.querySelectorAll('.en').forEach(el => el.style.display = 'block');
+        document.querySelectorAll(':not(.en)').forEach(el => {
+          if (['H1', 'H2', 'P', 'A', 'LI', 'DIV'].includes(el.tagName)) {
+            if (!el.classList.contains('en')) el.style.display = 'none';
+          }
+        });
+      } else {
+        document.querySelector('html').setAttribute('dir', 'rtl');
+        document.querySelectorAll('.en').forEach(el => el.style.display = 'none');
+        document.querySelectorAll(':not(.en)').forEach(el => {
+          if (['H1', 'H2', 'P', 'A', 'LI', 'DIV'].includes(el.tagName)) {
+            if (!el.classList.contains('en')) el.style.display = 'block';
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 Genetic Feature Selection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-toggle {
+      position: absolute; top: 20px; right: 20px;
+      background: #2c6fbb; color: white; border: none;
+      padding: 6px 12px; border-radius: 4px; cursor: pointer;
+      font-size: 14px;
+      z-index: 10;
+    }
+    .hero-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <button class="lang-toggle" onclick="toggleLang()">EN / AR</button>
+
+  <div class="container mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <div class="hero-gradient text-white rounded-2xl p-8 mb-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4" 
+          data-ar="🎯 اختيار السمات باستخدام الخوارزمية الجينية"
+          data-en="🎯 Genetic Feature Selection"></h1>
+      <p class="text-lg md:text-xl max-w-2xl mx-auto"
+         data-ar="هذا المشروع يهدف إلى مقارنة طرق اختيار السمات (Feature Selection) المختلفة، مع التركيز على استخدام <strong>الخوارزمية الجينية</strong> لاكتشاف أفضل مجموعة من السمات التي تحسّن أداء نموذج التنبؤ."
+         data-en="This project compares various feature selection methods, with a focus on using a <strong>Genetic Algorithm (GA)</strong> to discover the optimal subset of features that improves predictive model performance."></p>
+    </div>
+
+    <!-- Why GA? & Team -->
+    <div class="grid md:grid-cols-2 gap-8 mb-8">
+      <!-- Why GA? -->
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4"
+            data-ar="لماذا الخوارزمية الجينية؟"
+            data-en="Why Genetic Algorithm?"></h2>
+        <ul class="space-y-2 text-gray-700">
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span data-ar="تستكشف فضاء الحلول بشكل ذكي باستخدام مبادئ التطور الطبيعي."
+                  data-en="Intelligently explores the solution space using principles of natural evolution."></span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span data-ar="تكتشف تركيبات غير بديهية من السمات قد تفوتها الطرق الأخرى."
+                  data-en="Discovers non-intuitive feature combinations that other methods might miss."></span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span data-ar="مناسبة للبيانات المعقدة ذات العلاقات غير الخطية."
+                  data-en="Suitable for complex data with non-linear relationships."></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Team Section -->
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl shadow-sm border border-blue-100">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold text-blue-700 mb-1"
+              data-ar="إعداد الطالبين"
+              data-en="Prepared by Students"></h2>
+          <div class="w-16 h-1px bg-blue-300 mx-auto"></div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Student 1 -->
+          <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+            <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">HF</div>
+            <div class="mr-4 text-right md:text-left">
+              <div class="font-semibold text-gray-800" data-ar="حسين فطراوي" data-en="Hussien Fatrawi"></div>
+              <div class="text-sm text-gray-600" data-ar="حسين فطراوي" data-en="Hussien Fatrawi"></div>
+            </div>
+          </div>
+
+          <!-- Student 2 -->
+          <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+            <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center text-white font-bold text-lg">AB</div>
+            <div class="mr-4 text-right md:text-left">
+              <div class="font-semibold text-gray-800" data-ar="أميرة بيطار" data-en="Amira Bitar"></div>
+              <div class="text-sm text-gray-600" data-ar="أميرة بيطار" data-en="Amira Bitar"></div>
+            </div>
+          </div>
+
+          <!-- Supervisors -->
+          <div class="mt-6 pt-4 border-t border-blue-100">
+            <div class="flex items-center p-4 bg-blue-50 rounded-lg">
+              <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-lg">K&amp;L</div>
+              <div class="mr-4 text-right md:text-left">
+                <div class="font-semibold text-gray-800" data-ar="بإشراف الأنستين القديرات" data-en="Supervised by the esteemed instructors"></div>
+                <div class="text-lg font-bold text-amber-700" data-ar="كوكي و لولو" data-en="Ms. Koki and Ms. Lulu"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Button -->
+    <div class="text-center mt-8">
+      <a href="upload.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300"
+         data-ar="ابدأ التحليل الآن →"
+         data-en="Start Analysis →"></a>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'ar'; // default
+
+    function toggleLang() {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      document.querySelector('html').setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+
+      // Update all elements with data-ar/data-en
+      document.querySelectorAll('[data-ar]').forEach(el => {
+        if (currentLang === 'ar') {
+          el.innerHTML = el.getAttribute('data-ar');
+        } else {
+          el.innerHTML = el.getAttribute('data-en');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔍 Advanced Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .metric-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-4px);
+    }
+    .highlight {
+      background: #eef4fc;
+      border-left: 4px solid #2c6fbb;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .insight {
+      background: #fff8e1;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-3xl font-bold text-blue-600 mb-6" id="analysisTitle">🔍 Advanced Analysis</h1>
+        <div id="analysisContent" class="space-y-6">
+          <div class="metric-card">
+            <h2 class="text-xl font-semibold mb-2" id="bestMetricLabel">🏆 Best Algorithm by MSE</h2>
+            <p id="bestMethod" class="text-lg font-bold text-green-600">Loading...</p>
+            <p id="bestValue" class="mt-2">Achieved <span id="metricName">MSE</span>: <span id="bestValueNumber">-</span></p>
+          </div>
+          <div id="whyBest" class="highlight">
+            <h3 class="font-semibold mb-2">Why is this algorithm the best?</h3>
+            <p id="whyBestText">Loading...</p>
+          </div>
+          <div class="metric-card">
+            <h2 class="text-xl font-semibold mb-2">⚡ Fastest Algorithm</h2>
+            <p id="fastestMethod" class="text-lg font-bold text-blue-600">Loading...</p>
+            <p id="fastestTime" class="mt-2">Execution time: <span id="fastestTimeValue">-</span> seconds</p>
+          </div>
+          <div class="metric-card">
+            <h2 class="text-xl font-semibold mb-2">🤝 Feature Overlap with GA</h2>
+            <p id="overlapMethod" class="text-lg font-bold text-purple-600">Loading...</p>
+            <p id="overlapJaccard" class="mt-2">Jaccard similarity: <span id="overlapJaccardValue">-</span></p>
+          </div>
+          <div id="insights" class="insight">
+            <h3 class="font-semibold mb-2">💡 Key Insights</h3>
+            <ul id="insightsList" class="list-disc list-inside space-y-1">
+              <li>Loading insights...</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-8 flex space-x-4">
+          <a href="results.html" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            ← Back to Results
+          </a>
+          <a href="upload.html" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+            🔄 New Analysis
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = JSON.parse(localStorage.getItem('lastResult'));
+      if (!data) {
+        document.getElementById('analysisContent').innerHTML = '<p class="text-center text-red-600">No results found. Please run a new analysis.</p>';
+        return;
+      }
+
+      const isClassification = data.problem_type === "classification";
+      const metricName = isClassification ? "Accuracy" : "MSE";
+      const lowerIsBetter = !isClassification;
+
+      document.getElementById('analysisTitle').textContent = isClassification 
+        ? "🔍 Advanced Classification Analysis" 
+        : "🔍 Advanced Regression Analysis";
+      document.getElementById('bestMetricLabel').textContent = isClassification 
+        ? "🏆 Best Algorithm by Accuracy" 
+        : "🏆 Best Algorithm by MSE";
+      document.getElementById('metricName').textContent = metricName;
+
+      // Find best method
+      let bestMethod = 'GA';
+      let bestValue = data.results.GA.mse;
+      for (const [method, res] of Object.entries(data.results)) {
+        if (res.mse !== null) {
+          if (lowerIsBetter ? (res.mse < bestValue) : (res.mse > bestValue)) {
+            bestValue = res.mse;
+            bestMethod = method;
+          }
+        }
+      }
+
+      // Fastest
+      let fastestMethod = 'GA';
+      let minTime = data.results.GA.time;
+      for (const [method, res] of Object.entries(data.results)) {
+        if (res.time < minTime) {
+          minTime = res.time;
+          fastestMethod = method;
+        }
+      }
+
+      // Overlap
+      const gaFeatures = new Set(data.results.GA.selected);
+      let maxOverlap = 0;
+      let bestOverlapMethod = '';
+      for (const [method, res] of Object.entries(data.results)) {
+        if (method === 'GA') continue;
+        const overlap = res.selected.filter(x => gaFeatures.has(x)).length;
+        const jaccard = overlap / (gaFeatures.size + res.selected.length - overlap);
+        if (jaccard > maxOverlap) {
+          maxOverlap = jaccard;
+          bestOverlapMethod = method;
+        }
+      }
+
+      // Update DOM
+      document.getElementById('bestMethod').textContent = bestMethod;
+      document.getElementById('bestValueNumber').textContent = bestValue.toFixed(4);
+      document.getElementById('fastestMethod').textContent = fastestMethod;
+      document.getElementById('fastestTimeValue').textContent = minTime.toFixed(3);
+      document.getElementById('overlapMethod').textContent = bestOverlapMethod;
+      document.getElementById('overlapJaccardValue').textContent = maxOverlap.toFixed(2);
+
+      // Why best
+      const whyBestText = document.getElementById('whyBestText');
+      if (bestMethod === 'GA') {
+        whyBestText.innerHTML = isClassification
+          ? `<ul class="list-disc list-inside space-y-1">
+              <li>GA achieved the highest classification accuracy.</li>
+              <li>It explored diverse feature combinations effectively.</li>
+            </ul>`
+          : `<ul class="list-disc list-inside space-y-1">
+              <li>GA achieved the lowest prediction error (MSE).</li>
+              <li>It balanced feature simplicity and model performance.</li>
+            </ul>`;
+      } else {
+        whyBestText.innerHTML = `<p>The method <strong>${bestMethod}</strong> outperformed GA in this case.</p>`;
+      }
+
+      // Insights
+      document.getElementById('insightsList').innerHTML = `
+        <li>GA selected ${data.results.GA.selected.length} features.</li>
+        <li>The fastest method was ${fastestMethod} (${minTime.toFixed(3)}s).</li>
+        <li>Most similar method to GA: ${bestOverlapMethod} (Jaccard = ${maxOverlap.toFixed(2)}).</li>
+      `;
+    });
+  </script>
+</body>
+</html>

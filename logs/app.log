@@ -1,0 +1,149 @@
+2025-11-02 23:51:28,792 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-02 23:51:28,800 - backend.config - INFO - Application started successfully
+2025-11-02 23:51:34,725 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-02 23:51:34,735 - backend.config - INFO - Application started successfully
+2025-11-02 23:51:53,278 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-02 23:51:53,285 - backend.config - INFO - Application started successfully
+2025-11-02 23:52:41,319 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-02 23:52:41,328 - backend.config - INFO - Application started successfully
+2025-11-02 23:53:06,232 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-02 23:53:06,251 - backend.config - INFO - Application started successfully
+2025-11-02 23:53:48,024 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-02 23:53:48,025 - backend.config - INFO - Uploading file: student_exam_scores.csv
+2025-11-02 23:53:48,082 - backend.config - INFO - CSV validated: 6 columns, 200 rows
+2025-11-02 23:53:48,153 - backend.config - INFO - Data prepared: X shape=(200, 15), y shape=(200,)
+2025-11-02 23:53:48,154 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-02 23:53:48,477 - backend.config - ERROR - GA execution failed: Can't get local object 'run_ga.<locals>.evaluate_individual'
+2025-11-02 23:53:48,478 - backend.config - INFO - Temporary file cleaned up
+2025-11-03 01:02:35,165 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 01:02:35,176 - backend.config - INFO - Application started successfully
+2025-11-03 01:20:46,529 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 01:20:46,537 - backend.config - INFO - Application started successfully
+2025-11-03 01:22:06,764 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-03 01:22:06,765 - backend.config - INFO - Uploading file: iris.csv
+2025-11-03 01:22:06,796 - backend.config - INFO - CSV validated: 5 columns, 150 rows
+2025-11-03 01:22:06,832 - backend.config - INFO - Data prepared: X shape=(150, 6), y shape=(150,)
+2025-11-03 01:22:06,833 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-03 01:22:07,113 - backend.config - ERROR - GA execution failed: Can't get local object 'run_ga.<locals>.evaluate_individual'
+2025-11-03 01:22:07,114 - backend.config - INFO - Temporary file cleaned up
+2025-11-03 01:24:16,452 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-03 01:24:16,453 - backend.config - INFO - Uploading file: iris.csv
+2025-11-03 01:24:16,462 - backend.config - INFO - CSV validated: 5 columns, 150 rows
+2025-11-03 01:24:16,473 - backend.config - INFO - Data prepared: X shape=(150, 6), y shape=(150,)
+2025-11-03 01:24:16,474 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-03 01:24:16,758 - backend.config - ERROR - GA execution failed: Can't get local object 'run_ga.<locals>.evaluate_individual'
+2025-11-03 01:24:16,759 - backend.config - INFO - Temporary file cleaned up
+2025-11-03 01:25:20,272 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 01:25:20,281 - backend.config - INFO - Application started successfully
+2025-11-03 01:25:57,475 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-03 01:25:57,476 - backend.config - INFO - Uploading file: student_exam_scores.csv
+2025-11-03 01:25:57,499 - backend.config - INFO - CSV validated: 6 columns, 200 rows
+2025-11-03 01:25:57,536 - backend.config - INFO - Data prepared: X shape=(200, 15), y shape=(200,)
+2025-11-03 01:25:57,538 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-03 01:26:07,395 - backend.config - INFO - GA completed in 9.86s. Selected 10 features. Best score: -7.4912
+2025-11-03 01:26:07,397 - backend.config - INFO - Running 6 comparison methods...
+2025-11-03 01:26:07,447 - backend.config - INFO - SelectKBest: 10 features, score=7.4709, time=0.05s
+2025-11-03 01:26:07,544 - backend.config - INFO - LassoCV: 5 features, score=7.4563, time=0.10s
+2025-11-03 01:26:09,547 - backend.config - INFO - RFE: 10 features, score=7.4697, time=2.00s
+2025-11-03 01:26:09,598 - backend.config - INFO - VarianceThreshold: 5 features, score=7.4563, time=0.05s
+2025-11-03 01:26:09,697 - backend.config - INFO - MutualInfo_topK: 10 features, score=9.7672, time=0.10s
+2025-11-03 01:26:10,071 - backend.config - INFO - RandomForest_topK: 10 features, score=7.4671, time=0.37s
+2025-11-03 01:26:10,089 - backend.config - INFO - Generating plots...
+2025-11-03 01:26:13,738 - backend.config - INFO - Plots generated successfully
+2025-11-03 01:26:13,738 - backend.config - INFO - Feature selection completed successfully
+2025-11-03 01:26:13,741 - backend.config - INFO - Temporary file cleaned up
+2025-11-03 01:29:34,164 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 01:29:34,174 - backend.config - INFO - Application started successfully
+2025-11-03 01:29:50,687 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 01:29:50,696 - backend.config - INFO - Application started successfully
+2025-11-03 01:30:53,332 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-03 01:30:53,334 - backend.config - INFO - Uploading file: student_exam_scores.csv
+2025-11-03 01:30:53,358 - backend.config - INFO - CSV validated: 6 columns, 200 rows
+2025-11-03 01:30:53,386 - backend.config - INFO - Data prepared: X shape=(200, 15), y shape=(200,)
+2025-11-03 01:30:53,388 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-03 01:30:53,405 - utils.ga_optimized - INFO - Starting GA: pop_size=40, generations=12, parallel=True, lambda_penalty=0.05
+2025-11-03 01:30:58,787 - utils.ga_optimized - INFO - GA completed: best_fitness=7.4705, generations=12
+2025-11-03 01:30:58,787 - backend.config - INFO - GA completed in 5.40s. Selected 6 features. Best score: 7.4705
+2025-11-03 01:30:58,788 - backend.config - INFO - Running 6 comparison methods...
+2025-11-03 01:30:58,838 - backend.config - INFO - SelectKBest: 6 features, score=7.4715, time=0.05s
+2025-11-03 01:30:58,960 - backend.config - INFO - LassoCV: 5 features, score=7.4563, time=0.12s
+2025-11-03 01:31:02,229 - backend.config - INFO - RFE: 6 features, score=7.4651, time=3.27s
+2025-11-03 01:31:02,295 - backend.config - INFO - VarianceThreshold: 5 features, score=7.4563, time=0.07s
+2025-11-03 01:31:02,406 - backend.config - INFO - MutualInfo_topK: 6 features, score=7.4567, time=0.11s
+2025-11-03 01:31:02,747 - backend.config - INFO - RandomForest_topK: 6 features, score=7.4651, time=0.34s
+2025-11-03 01:31:02,770 - backend.config - INFO - Generating plots...
+2025-11-03 01:31:05,282 - backend.config - INFO - Plots generated successfully
+2025-11-03 01:31:05,282 - backend.config - INFO - Feature selection completed successfully
+2025-11-03 01:31:05,284 - backend.config - INFO - Temporary file cleaned up
+2025-11-03 01:34:35,734 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 01:34:35,754 - backend.config - INFO - Application started successfully
+2025-11-03 02:14:54,075 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 02:14:54,079 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 02:45:58,689 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 02:45:58,695 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 02:45:58,700 - backend.config - INFO - Application started successfully
+2025-11-03 02:46:12,789 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-03 02:46:12,790 - backend.config - INFO - Uploading file: student_exam_scores.csv
+2025-11-03 02:46:12,826 - backend.config - INFO - CSV validated: 6 columns, 200 rows
+2025-11-03 02:46:12,878 - backend.config - INFO - Data prepared: X shape=(200, 15), y shape=(200,)
+2025-11-03 02:46:12,879 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-03 02:46:12,884 - utils.ga_optimized - INFO - Starting GA: pop_size=40, generations=12, parallel=True, lambda_penalty=0.05
+2025-11-03 02:46:18,496 - utils.ga_optimized - INFO - GA completed: best_fitness=7.4705, generations=12
+2025-11-03 02:46:18,496 - backend.config - INFO - GA completed in 5.62s. Selected 6 features. Best score: 7.4705
+2025-11-03 02:46:18,496 - backend.config - INFO - Running 6 comparison methods...
+2025-11-03 02:46:18,859 - backend.config - INFO - SelectKBest: 6 features, score=7.4715, time=0.36s
+2025-11-03 02:46:19,430 - backend.config - INFO - LassoCV: 5 features, score=7.4563, time=0.57s
+2025-11-03 02:46:22,443 - backend.config - INFO - RFE: 6 features, score=7.4651, time=3.01s
+2025-11-03 02:46:22,478 - backend.config - INFO - VarianceThreshold: 5 features, score=7.4563, time=0.03s
+2025-11-03 02:46:22,565 - backend.config - INFO - MutualInfo_topK: 6 features, score=7.4567, time=0.09s
+2025-11-03 02:46:22,843 - backend.config - INFO - RandomForest_topK: 6 features, score=7.4651, time=0.28s
+2025-11-03 02:46:22,851 - backend.config - INFO - Generating plots...
+2025-11-03 02:46:25,963 - backend.config - INFO - Plots generated successfully
+2025-11-03 02:46:25,963 - backend.config - INFO - Feature selection completed successfully
+2025-11-03 02:46:25,964 - backend.config - INFO - Temporary file cleaned up
+2025-11-03 02:46:50,081 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 02:46:50,086 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 09:01:59,832 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 09:01:59,843 - backend.config - INFO - Application started successfully
+2025-11-03 09:02:23,450 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-03 09:02:23,451 - backend.config - INFO - Uploading file: iris.csv
+2025-11-03 09:02:23,497 - backend.config - INFO - CSV validated: 5 columns, 150 rows
+2025-11-03 09:02:23,562 - backend.config - INFO - Data prepared: X shape=(150, 6), y shape=(150,)
+2025-11-03 09:02:23,562 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-03 09:02:23,568 - utils.ga_optimized - INFO - Starting GA: pop_size=40, generations=12, parallel=True, lambda_penalty=0.05
+2025-11-03 09:02:28,600 - utils.ga_optimized - INFO - Early stopping at generation 6
+2025-11-03 09:02:28,601 - utils.ga_optimized - INFO - GA completed: best_fitness=0.0655, generations=7
+2025-11-03 09:02:28,602 - backend.config - INFO - GA completed in 5.04s. Selected 1 features. Best score: 0.0655
+2025-11-03 09:02:28,603 - backend.config - INFO - Running 6 comparison methods...
+2025-11-03 09:02:28,661 - backend.config - INFO - SelectKBest: 1 features, score=0.0572, time=0.06s
+2025-11-03 09:02:28,777 - backend.config - INFO - LassoCV: 1 features, score=0.0572, time=0.11s
+2025-11-03 09:02:30,564 - backend.config - INFO - RFE: 1 features, score=1.0493, time=1.79s
+2025-11-03 09:02:30,614 - backend.config - INFO - VarianceThreshold: 1 features, score=0.0572, time=0.05s
+2025-11-03 09:02:30,688 - backend.config - INFO - MutualInfo_topK: 1 features, score=0.0572, time=0.07s
+2025-11-03 09:02:30,989 - backend.config - INFO - RandomForest_topK: 1 features, score=1.0493, time=0.30s
+2025-11-03 09:02:30,992 - backend.config - INFO - Generating plots...
+2025-11-03 09:02:35,079 - backend.config - INFO - Plots generated successfully
+2025-11-03 09:02:35,080 - backend.config - INFO - Feature selection completed successfully
+2025-11-03 09:02:35,082 - backend.config - INFO - Temporary file cleaned up
+2025-11-03 09:23:14,328 - backend.config - INFO - CORS enabled for origins: ['*']
+2025-11-03 09:23:14,354 - backend.config - INFO - Application started successfully
+2025-11-03 09:25:26,549 - backend.config - INFO - Starting feature selection: problem_type=regression, pop_size=40, generations=12, ga_version=optimized
+2025-11-03 09:25:26,550 - backend.config - INFO - Uploading file: iris.csv
+2025-11-03 09:25:26,593 - backend.config - INFO - CSV validated: 5 columns, 150 rows
+2025-11-03 09:25:26,666 - backend.config - INFO - Data prepared: X shape=(150, 6), y shape=(150,)
+2025-11-03 09:25:26,667 - backend.config - INFO - Starting Genetic Algorithm...
+2025-11-03 09:25:26,672 - utils.ga_optimized - INFO - Starting GA: pop_size=40, generations=12, parallel=True, lambda_penalty=0.05
+2025-11-03 09:25:31,152 - utils.ga_optimized - INFO - Early stopping at generation 6
+2025-11-03 09:25:31,153 - utils.ga_optimized - INFO - GA completed: best_fitness=0.0655, generations=7
+2025-11-03 09:25:31,153 - backend.config - INFO - GA completed in 4.49s. Selected 1 features. Best score: 0.0655
+2025-11-03 09:25:31,154 - backend.config - INFO - Running 6 comparison methods...
+2025-11-03 09:25:31,194 - backend.config - INFO - SelectKBest: 1 features, score=0.0572, time=0.04s
+2025-11-03 09:25:31,317 - backend.config - INFO - LassoCV: 1 features, score=0.0572, time=0.12s
+2025-11-03 09:25:33,145 - backend.config - INFO - RFE: 1 features, score=1.0493, time=1.83s
+2025-11-03 09:25:33,215 - backend.config - INFO - VarianceThreshold: 1 features, score=0.0572, time=0.06s
+2025-11-03 09:25:33,284 - backend.config - INFO - MutualInfo_topK: 1 features, score=0.0572, time=0.07s
+2025-11-03 09:25:33,577 - backend.config - INFO - RandomForest_topK: 1 features, score=1.0493, time=0.29s
+2025-11-03 09:25:33,604 - backend.config - INFO - Generating plots...
+2025-11-03 09:25:37,578 - backend.config - INFO - Plots generated successfully
+2025-11-03 09:25:37,582 - backend.config - INFO - Feature selection completed successfully
+2025-11-03 09:25:37,586 - backend.config - INFO - Temporary file cleaned up

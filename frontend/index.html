@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 Genetic Feature Selection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-toggle {
+      position: absolute; top: 20px; right: 20px;
+      background: #2c6fbb; color: white; border: none;
+      padding: 6px 12px; border-radius: 4px; cursor: pointer;
+      font-size: 14px;
+      z-index: 10;
+    }
+    .hero-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <button class="lang-toggle" onclick="toggleLang()">EN / AR</button>
+
+  <div class="container mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <div class="hero-gradient text-white rounded-2xl p-8 mb-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4" 
+          data-ar="🎯 اختيار السمات باستخدام الخوارزمية الجينية"
+          data-en="🎯 Genetic Feature Selection"></h1>
+      <p class="text-lg md:text-xl max-w-2xl mx-auto"
+         data-ar="هذا المشروع يهدف إلى مقارنة طرق اختيار السمات (Feature Selection) المختلفة، مع التركيز على استخدام <strong>الخوارزمية الجينية</strong> لاكتشاف أفضل مجموعة من السمات التي تحسّن أداء نموذج التنبؤ."
+         data-en="This project compares various feature selection methods, with a focus on using a <strong>Genetic Algorithm (GA)</strong> to discover the optimal subset of features that improves predictive model performance."></p>
+    </div>
+
+    <!-- Why GA? & Team -->
+    <div class="grid md:grid-cols-2 gap-8 mb-8">
+      <!-- Why GA? -->
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4"
+            data-ar="لماذا الخوارزمية الجينية؟"
+            data-en="Why Genetic Algorithm?"></h2>
+        <ul class="space-y-2 text-gray-700">
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span data-ar="تستكشف فضاء الحلول بشكل ذكي باستخدام مبادئ التطور الطبيعي."
+                  data-en="Intelligently explores the solution space using principles of natural evolution."></span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span data-ar="تكتشف تركيبات غير بديهية من السمات قد تفوتها الطرق الأخرى."
+                  data-en="Discovers non-intuitive feature combinations that other methods might miss."></span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span data-ar="مناسبة للبيانات المعقدة ذات العلاقات غير الخطية."
+                  data-en="Suitable for complex data with non-linear relationships."></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Team Section -->
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl shadow-sm border border-blue-100">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold text-blue-700 mb-1"
+              data-ar="إعداد الطالبين"
+              data-en="Prepared by Students"></h2>
+          <div class="w-16 h-1px bg-blue-300 mx-auto"></div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Student 1 -->
+         <!-- Student Table -->
+<div class="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+  <h2 class="text-2xl font-semibold text-blue-600 mb-4" data-ar="معلومات الطلاب" data-en="Student Information"></h2>
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider"> </th>
+        <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider" data-ar="الاسم" data-en="Name"></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" data-ar="الاسم" data-en="Name"></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" data-ar="الصف" data-en="Class"></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" data-ar="المعرف الجامعي" data-en="Student ID"></th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      <tr>
+        <td class="px-4 py-3 whitespace-nowrap text-center">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">HF</div>
+        </td>
+        <td class="px-4 py-3 whitespace-nowrap text-right font-medium text-gray-900">حسين فطراوي</td>
+        <td class="px-4 py-3 whitespace-nowrap text-gray-700">Hussien Fatrawi</td>
+        <td class="px-4 py-3 whitespace-nowrap text-gray-700">C6</td>
+        <td class="px-4 py-3 whitespace-nowrap text-gray-700">hussien_220540</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 whitespace-nowrap text-center">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center text-white font-bold text-sm">AB</div>
+        </td>
+        <td class="px-4 py-3 whitespace-nowrap text-right font-medium text-gray-900">أميرة بيطار</td>
+        <td class="px-4 py-3 whitespace-nowrap text-gray-700">Amira Bitar</td>
+        <td class="px-4 py-3 whitespace-nowrap text-gray-700">C6</td>
+        <td class="px-4 py-3 whitespace-nowrap text-gray-700">amira_226274</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+          <!-- Supervisors -->
+          <div class="mt-6 pt-4 border-t border-blue-100">
+            <div class="flex items-center p-4 bg-blue-50 rounded-lg">
+              <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-lg">IS</div>
+              <div class="mr-4 text-right md:text-left">
+                <div class="font-semibold text-gray-800" data-ar="بإشراف الدكتور " data-en="Supervised by the esteemed instructors"></div>
+                <div class="text-lg font-bold text-amber-700" data-ar="عصام سلمان" data-en="Dr. Issam Salman"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Button -->
+    <div class="text-center mt-8">
+      <a href="upload.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300"
+         data-ar="ابدأ التحليل الآن →"
+         data-en="Start Analysis →"></a>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'ar'; // default
+
+    function toggleLang() {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      document.querySelector('html').setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+
+      // Update all elements with data-ar/data-en
+      document.querySelectorAll('[data-ar]').forEach(el => {
+        if (currentLang === 'ar') {
+          el.innerHTML = el.getAttribute('data-ar');
+        } else {
+          el.innerHTML = el.getAttribute('data-en');
+        }
+      });
+    }
+      toggleLang();
+  </script>
+</body>
+</html>

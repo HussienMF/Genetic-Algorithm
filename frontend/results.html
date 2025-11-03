@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📊 Results</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .tab-btn {
+      padding: 12px 20px;
+      background: #f1f7fe;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: #6c757d;
+      transition: all 0.3s;
+    }
+    .tab-btn.active {
+      background: white;
+      color: #2c6fbb;
+      border: 1px solid #dfe6ec;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .feature-list {
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      border-left: 4px solid #2c6fbb;
+    }
+    .plot-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .plot-container img {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .plot-container img:hover {
+      border-color: #2c6fbb;
+    }
+    .light-box {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .light-box img {
+      max-width: 90%;
+      max-height: 90%;
+      border: 2px solid white;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-3xl font-bold text-blue-600 mb-6">📊 Results</h1>
+        <!-- Tabs -->
+        <div class="tabs flex border-b mb-6">
+          <button class="tab-btn active" data-tab="summary">📊 Summary</button>
+          <button class="tab-btn" data-tab="plots">📈 Plots</button>
+          <button class="tab-btn" data-tab="features">🧩 Features</button>
+        </div>
+        <!-- Summary Tab -->
+        <div id="summary" class="tab-content active">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4" id="summaryTitle">Comparison Summary</h2>
+            <div id="summaryTable" class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"># Features</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" id="metricHeader">MSE</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                  </tr>
+                </thead>
+                <tbody id="summaryBody" class="bg-white divide-y divide-gray-200">
+                  <!-- Will be filled by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Plots Tab -->
+        <div id="plots" class="tab-content">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">📈 Plots</h2>
+            <div id="plotsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Will be filled by JS -->
+            </div>
+          </div>
+        </div>
+        <!-- Features Tab -->
+        <div id="features" class="tab-content">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">🧩 Selected Features</h2>
+            <div id="featuresList" class="space-y-4">
+              <!-- Will be filled by JS -->
+            </div>
+          </div>
+        </div>
+        <!-- Navigation -->
+        <div class="mt-8 flex space-x-4">
+          <a href="index.html" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            ← Home
+          </a>
+          <a href="analysis.html" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+            🔍 Advanced Analysis
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="light-box" id="lightbox">
+    <img id="lightboxImg" src="" alt="Enlarged plot">
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const data = JSON.parse(localStorage.getItem('lastResult'));
+      if (!data) {
+        document.body.innerHTML = '<div class="container mx-auto px-4 py-8 text-center"><h1 class="text-2xl font-bold text-red-600">No results found. Please run a new analysis.</h1><a href="upload.html" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">← Run New Analysis</a></div>';
+        return;
+      }
+
+      const isClassification = data.problem_type === "classification";
+      const metricLabel = isClassification ? "Accuracy" : "MSE";
+
+      // Update UI labels
+      document.getElementById('metricHeader').textContent = metricLabel;
+      document.getElementById('summaryTitle').textContent = isClassification 
+        ? "Classification Results Summary" 
+        : "Regression Results Summary";
+
+      // Fill Summary Table
+      const summaryBody = document.getElementById('summaryBody');
+      for (const [method, res] of Object.entries(data.results)) {
+        let metricValue = 'N/A';
+        if (res.mse !== null) {
+          if (isClassification) {
+            metricValue = res.mse.toFixed(4); // already accuracy
+          } else {
+            metricValue = res.mse.toFixed(4); // positive MSE
+          }
+        }
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">${method}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${res.selected.length}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${metricValue}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${res.time.toFixed(3)}s</td>
+        `;
+        summaryBody.appendChild(row);
+      }
+
+      // Fill Features List
+      const featuresList = document.getElementById('featuresList');
+      for (const [method, res] of Object.entries(data.results)) {
+        const featDiv = document.createElement('div');
+        featDiv.className = 'feature-list';
+        featDiv.innerHTML = `<strong>${method}:</strong> ${res.selected.join(', ') || 'None'}`;
+        featuresList.appendChild(featDiv);
+      }
+
+      // Fill Plots
+      const plotsContainer = document.getElementById('plotsContainer');
+      data.plots.forEach(url => {
+        const plotDiv = document.createElement('div');
+        plotDiv.className = 'plot-container';
+        plotDiv.innerHTML = `<img src="${url}" alt="${url}" onclick="openLightbox('${url}')">`;
+        plotsContainer.appendChild(plotDiv);
+      });
+
+      // Tab Switching
+      document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const tabId = button.dataset.tab;
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          button.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    });
+
+    function openLightbox(src) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImg');
+      img.src = src;
+      lightbox.style.display = 'flex';
+      lightbox.onclick = () => lightbox.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
